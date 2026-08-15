@@ -3,7 +3,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import helmet from 'helmet';
-import cors from 'cors';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
@@ -14,12 +13,10 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
 
   app.use(helmet());
-  app.use(
-    cors({
-      origin: process.env.CORS_ORIGIN || '*',
-      credentials: true,
-    }),
-  );
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN || '*',
+    credentials: true,
+  });
 
   app.setGlobalPrefix('api/v1');
 
