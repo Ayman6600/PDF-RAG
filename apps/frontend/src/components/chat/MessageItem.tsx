@@ -47,7 +47,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, onCitationCli
             </div>
             <div className="flex flex-wrap gap-2">
               {message.citations.map((cit, idx) => (
-                <CitationCard key={idx} citation={cit} onClick={onCitationClick} />
+                <CitationCard key={idx} citation={cit} isTopMatch={idx === 0} onClick={onCitationClick} />
               ))}
             </div>
           </div>

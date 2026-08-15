@@ -96,6 +96,7 @@ model Document {
   chunks         DocumentChunk[]
   ingestionJobs  IngestionJob[]
 
+  @@index([organizationId, status])
   @@index([organizationId])
   @@index([checksum])
   @@index([status])
@@ -144,6 +145,7 @@ model DocumentChunk {
   createdAt    DateTime                 @default(now())
   citations    Citation[]
 
+  @@index([documentId, pageNumber])
   @@index([documentId])
   @@index([sectionId])
 }
