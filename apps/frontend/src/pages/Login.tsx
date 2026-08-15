@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
 
 export const Login: React.FC = () => {
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('admin@acme.com');
   const [password, setPassword] = useState('Admin123!');
@@ -12,6 +14,12 @@ export const Login: React.FC = () => {
   const [orgName, setOrgName] = useState('Acme Corporation');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,9 +35,11 @@ export const Login: React.FC = () => {
           organizationName: orgName,
         });
         login(res.data.tokens, res.data.user);
+        navigate('/', { replace: true });
       } else {
         const res: any = await api.post('/auth/login', { email, password });
         login(res.data.tokens, res.data.user);
+        navigate('/', { replace: true });
       }
     } catch (err: any) {
       setError(err.error?.message || 'Authentication failed');
