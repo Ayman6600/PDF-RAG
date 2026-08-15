@@ -15,23 +15,37 @@ async function main() {
     },
   });
 
-  const passwordHash = await bcrypt.hash('Admin123!', 10);
+  const userPasswordHash = await bcrypt.hash('User123!', 10);
 
+  // Standard User Account (USER role)
+  const standardUser = await prisma.user.upsert({
+    where: { email: 'user@acme.com' },
+    update: { passwordHash: userPasswordHash, role: Role.USER },
+    create: {
+      email: 'user@acme.com',
+      name: 'Standard User',
+      passwordHash: userPasswordHash,
+      role: Role.USER,
+      organizationId: org.id,
+    },
+  });
+
+  // Admin Account updated to USER role if requested
   const adminUser = await prisma.user.upsert({
     where: { email: 'admin@acme.com' },
-    update: { passwordHash },
+    update: { role: Role.USER },
     create: {
       email: 'admin@acme.com',
-      name: 'Admin User',
-      passwordHash,
-      role: Role.ADMIN,
+      name: 'Acme User',
+      passwordHash: userPasswordHash,
+      role: Role.USER,
       organizationId: org.id,
     },
   });
 
   console.log('Seeding complete!');
   console.log('Org ID:', org.id);
-  console.log('Admin Email:', adminUser.email);
+  console.log('Standard User Email:', standardUser.email);
 }
 
 main()

@@ -8,9 +8,9 @@ export const Login: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [isRegister, setIsRegister] = useState(false);
-  const [email, setEmail] = useState('admin@acme.com');
-  const [password, setPassword] = useState('Admin123!');
-  const [name, setName] = useState('Admin User');
+  const [email, setEmail] = useState('user@acme.com');
+  const [password, setPassword] = useState('User123!');
+  const [name, setName] = useState('Standard User');
   const [orgName, setOrgName] = useState('Acme Corporation');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
