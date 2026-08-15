@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, FileText } from 'lucide-react';
 
 interface PDFViewerModalProps {
@@ -19,9 +19,14 @@ export const PDFViewerModal: React.FC<PDFViewerModalProps> = ({
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [zoom, setZoom] = useState(100);
 
+  useEffect(() => {
+    setCurrentPage(initialPage);
+  }, [initialPage, documentId]);
+
   if (!isOpen) return null;
 
-  const pdfUrl = `/api/v1/documents/${documentId}/file`;
+  const token = localStorage.getItem('access_token');
+  const pdfUrl = `/api/v1/documents/${documentId}/file?token=${encodeURIComponent(token || '')}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
