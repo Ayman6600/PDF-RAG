@@ -5,8 +5,8 @@ import { LayoutDashboard, FileText, MessageSquare, Settings, ShieldCheck } from 
 export const Sidebar: React.FC = () => {
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/documents', label: 'Documents', icon: FileText },
-    { to: '/chat', label: 'Chat Assistant', icon: MessageSquare },
+    { to: '/chat', label: 'Document Workspace', icon: MessageSquare },
+    { to: '/documents', label: 'Document Library', icon: FileText },
     { to: '/settings', label: 'Settings', icon: Settings },
   ];
 

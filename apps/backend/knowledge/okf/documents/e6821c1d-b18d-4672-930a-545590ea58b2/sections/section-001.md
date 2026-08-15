@@ -1,0 +1,14 @@
+---
+type: DocumentSection
+title: Document Content
+document_id: e6821c1d-b18d-4672-930a-545590ea58b2
+page_start: 1
+page_end: 3
+source_type: pdf
+tags:
+  - document-content
+---
+
+1) What Is Application An application is any program that helps a user complete a task, whether it’s work, communication, learning, or entertainment. We can build Application Using 1)Java Edition 2)Java Enterprise edition 3)Mobile/Micro Edition 2) What is servlet Servlet is an API which is used to develop web Applications A Servlet is a Java class used to handle client requests and generate dynamic responses in web applications. 3) Ways to create Servlet: •   By implementing Servlet interface •   Extending GenericServlet •   Extending HttpServlet (most commonly used) 4) What Is Generic Servlet GenericServlet is an  abstract class   that implements the Servlet interface and provides default implementations for most servlet methods. 
+5) What is httpServlet HttpServlet   is a class that extends GenericServlet and provides HTTP - specific methods such as: •   doGet() •   doPost() •   doPut() •   doDelete() These methods handle different types of HTTP requests sent by the browser. 6) What is PrintWriter •   PrintWriter is a Java class used to  display or write data . •   In Servlets, it is mainly used to send data from the server to the browser. 7) What is getWriter()? •   getWriter() is a method of HttpServletResponse. •   It returns a PrintWriter   object used to send output to the browser. 8) What is getParameter()? •   getParameter() is a method of HttpServletRequest. •   It is used to fetch data entered by the user in HTML forms. 9) Explain Servlet Life Cycle and its methods ? •   Loading → As per the request particular servlet class will be loaded to container •   Instantiation → The web container will create an instance for that loaded class •   Initialization → Called once when servlet is created. init() •   Request handling → Handles every request. service() •   Destruction → Called once before servlet is destroyed. destroy() 
+10) Servlet Architecture 11) Difference Between doGet() and doPost() doGet()   doPost() Used to get data from server   Used to send data to server Data will be display in url   Data will not be display in url Less secure   More secure Faster   Bit slower 12) What is Request Dispatcher Request Dispatcher is a interface it helps to dispatching the request from one servlet to another servlet/jsp/html or from one jsp to another jsp/servlet . There are two methods are present in Request Dispatcher 1)include () 2)forword() 1)forword(): -   when we want to transfer complete control to anither resourse then we make use of forword() 2)include(): - when we want to add output of another resourse into the current  response and continue the execution then we will make use of include() 

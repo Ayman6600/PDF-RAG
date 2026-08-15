@@ -1,17 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Loader2, Sparkles, MessageSquarePlus } from 'lucide-react';
+import { Send, Loader2, Sparkles, MessageSquarePlus, FileText, CheckCircle2, Layers } from 'lucide-react';
 import { MessageItem, ChatMessage } from './MessageItem';
 import { CitationItem } from './CitationCard';
 import { api } from '../../services/api';
 
 interface ChatWindowProps {
   conversationId?: string;
+  selectedDocId?: string;
+  selectedDocName?: string;
   onOpenViewer: (docId: string, docName: string, page: number) => void;
   onNewConversation: () => void;
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({
   conversationId,
+  selectedDocId,
+  selectedDocName,
   onOpenViewer,
   onNewConversation,
 }) => {
@@ -42,14 +46,14 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isStreaming]);
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isStreaming) return;
+  const handleSend = async (textToSend?: string) => {
+    const queryText = (textToSend || input).trim();
+    if (!queryText || isStreaming) return;
 
     let currentConvId = conversationId;
     if (!currentConvId) {
       try {
-        const newConvRes: any = await api.post('/conversations', { title: input.slice(0, 30) });
+        const newConvRes: any = await api.post('/conversations', { title: queryText.slice(0, 30) });
         currentConvId = newConvRes.data.id;
         onNewConversation();
       } catch (err: any) {
@@ -58,13 +62,12 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       }
     }
 
-    const userText = input.trim();
     setInput('');
 
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
       role: 'user',
-      content: userText,
+      content: queryText,
     };
 
     setMessages((prev) => [...prev, userMsg]);
@@ -80,9 +83,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
     setMessages((prev) => [...prev, initialAssistantMsg]);
 
-    // Setup EventSource / SSE connection for streaming tokens
-    const token = localStorage.getItem('access_token');
-    const sseUrl = `/api/v1/conversations/${currentConvId}/stream?content=${encodeURIComponent(userText)}`;
+    // Construct SSE URL with optional document ID scope filter
+    let sseUrl = `/api/v1/conversations/${currentConvId}/stream?content=${encodeURIComponent(queryText)}`;
+    if (selectedDocId) {
+      sseUrl += `&documentIds=${encodeURIComponent(selectedDocId)}`;
+    }
 
     const eventSource = new EventSource(sseUrl);
 
@@ -116,13 +121,23 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     });
   };
 
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSend();
+  };
+
   return (
     <div className="flex-1 flex flex-col glass-panel rounded-2xl border border-border h-full overflow-hidden">
-      {/* Top Bar */}
+      {/* Top Bar with Context Scope Indicator */}
       <div className="h-14 bg-surface px-6 flex items-center justify-between border-b border-border">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Sparkles className="w-5 h-5 text-indigo-400" />
           <h3 className="font-bold text-white text-sm">Grounded PDF Knowledge Chat</h3>
+
+          <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+            <FileText className="w-3.5 h-3.5 text-indigo-400" />
+            {selectedDocName ? `Scope: ${selectedDocName}` : 'Scope: All Uploaded Documents'}
+          </span>
         </div>
 
         <button
@@ -141,10 +156,27 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white flex items-center justify-center mb-4 shadow-xl shadow-indigo-500/20">
               <Sparkles className="w-8 h-8" />
             </div>
-            <h3 className="font-extrabold text-white text-xl">Ask Your Knowledge Base</h3>
+            <h3 className="font-extrabold text-white text-xl">Ask Your PDF Knowledge Base</h3>
             <p className="text-sm text-gray-400 max-w-md mt-2">
-              Query uploaded PDF documents using hybrid retrieval (pgvector + BM25 full-text). Every answer includes page-level citations.
+              Query uploaded PDF documents using hybrid pgvector + BM25 search. Every answer includes verifiable page-level citations.
             </p>
+
+            {/* Quick Prompt Chips */}
+            <div className="mt-6 flex flex-wrap justify-center gap-2 max-w-lg">
+              {[
+                'Summarize the uploaded PDF document',
+                'What are the key technical specifications?',
+                'Explain the main requirements mentioned',
+              ].map((prompt, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleSend(prompt)}
+                  className="px-3.5 py-2 bg-surface hover:bg-surface-hover border border-border text-xs text-indigo-300 rounded-xl transition-all font-medium text-left hover:scale-[1.02]"
+                >
+                  "{prompt}"
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
           messages.map((msg) => (
@@ -155,13 +187,17 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       </div>
 
       {/* Input Bar */}
-      <form onSubmit={handleSend} className="p-4 bg-surface/50 border-t border-border">
+      <form onSubmit={handleFormSubmit} className="p-4 bg-surface/50 border-t border-border">
         <div className="relative flex items-center">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask a question about your uploaded documents..."
+            placeholder={
+              selectedDocName
+                ? `Ask anything about "${selectedDocName}"...`
+                : 'Ask a question about your uploaded PDF documents...'
+            }
             disabled={isStreaming}
             className="w-full pl-4 pr-12 py-3 bg-slate-900/90 border border-border rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
           />
