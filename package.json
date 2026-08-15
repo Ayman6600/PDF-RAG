@@ -1,0 +1,29 @@
+{
+  "name": "okf-rag-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-Grade PDF RAG Platform using NestJS, OKF, pgvector, React, and Harness",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "eval": "pnpm --filter backend eval",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:prod:up": "docker-compose -f docker-compose.prod.yml up -d",
+    "docker:prod:down": "docker-compose -f docker-compose.prod.yml down"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

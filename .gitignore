@@ -1,0 +1,22 @@
+node_modules
+dist
+build
+.next
+.turbo
+*.log
+.DS_Store
+
+# Uploads & generated files
+uploads/*
+!uploads/.gitkeep
+knowledge/okf/*
+!knowledge/okf/.gitkeep
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Database
+prisma/*.db
+prisma/*.db-journal

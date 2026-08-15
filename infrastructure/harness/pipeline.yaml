@@ -1,0 +1,123 @@
+pipeline:
+  name: OKF-RAG Delivery Pipeline
+  identifier: OKF_RAG_Pipeline
+  projectIdentifier: okf_rag_platform
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: Build and Test
+        identifier: build_and_test
+        type: CI
+        spec:
+          cloneCodebase: true
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Install Dependencies
+                  identifier: install_deps
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: node:20-alpine
+                    command: |
+                      npm install -g pnpm
+                      pnpm install
+              - step:
+                  type: Run
+                  name: Lint and Type Check
+                  identifier: lint_typecheck
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: node:20-alpine
+                    command: |
+                      npm install -g pnpm
+                      pnpm run lint
+                      pnpm --filter backend exec tsc --noEmit
+                      pnpm --filter frontend exec tsc --noEmit
+              - step:
+                  type: Run
+                  name: Unit & Integration Tests
+                  identifier: run_tests
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: node:20-alpine
+                    command: |
+                      npm install -g pnpm
+                      pnpm run test
+              - step:
+                  type: BuildAndPushDockerRegistry
+                  name: Build & Push Backend Docker Image
+                  identifier: build_backend_image
+                  spec:
+                    connectorRef: <+input>
+                    dockerfilePath: apps/backend/Dockerfile
+                    repo: okf-rag/backend
+                    tags:
+                      - <+pipeline.sequenceId>
+                      - latest
+              - step:
+                  type: BuildAndPushDockerRegistry
+                  name: Build & Push Frontend Docker Image
+                  identifier: build_frontend_image
+                  spec:
+                    connectorRef: <+input>
+                    dockerfilePath: apps/frontend/Dockerfile
+                    repo: okf-rag/frontend
+                    tags:
+                      - <+pipeline.sequenceId>
+                      - latest
+    - stage:
+        name: Deploy to Staging
+        identifier: deploy_staging
+        type: Deployment
+        spec:
+          deploymentType: Kubernetes
+          service:
+            serviceRef: okf_rag_service
+          environment:
+            envRef: staging
+          execution:
+            steps:
+              - step:
+                  type: K8sRollingDeploy
+                  name: Rollout Staging Deployment
+                  identifier: rollout_staging
+                  spec:
+                    skipDryRun: false
+              - step:
+                  type: Run
+                  name: Staging Smoke Tests & Health Check
+                  identifier: staging_smoke_tests
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: curlimages/curl:latest
+                    command: |
+                      curl -f https://staging.okf-rag.internal/api/v1/health/ready
+    - stage:
+        name: Production Approval & Release
+        identifier: prod_release
+        type: Deployment
+        spec:
+          deploymentType: Kubernetes
+          service:
+            serviceRef: okf_rag_service
+          environment:
+            envRef: production
+          execution:
+            steps:
+              - step:
+                  type: HarnessApproval
+                  name: Approve Production Release
+                  identifier: approve_prod
+                  spec:
+                    approvalMessage: "Approve deployment of OKF-RAG release <+pipeline.sequenceId> to Production."
+                    approvers:
+                      userGroups:
+                        - devops_lead
+              - step:
+                  type: K8sRollingDeploy
+                  name: Rollout Production Deployment
+                  identifier: rollout_prod
+                  spec:
+                    skipDryRun: false
