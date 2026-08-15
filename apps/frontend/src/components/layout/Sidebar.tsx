@@ -1,11 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, LayoutDashboard, FileText, MessageSquare, Settings, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, FileText, MessageSquare, Settings, ShieldCheck } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
   const navItems = [
-    { to: '/', label: 'Home', icon: Home },
-    { to: '/chat', label: 'Document Workspace', icon: MessageSquare },
+    { to: '/', label: 'Document Workspace', icon: MessageSquare },
     { to: '/documents', label: 'Document Library', icon: FileText },
     { to: '/dashboard', label: 'Dashboard Metrics', icon: LayoutDashboard },
     { to: '/settings', label: 'Settings', icon: Settings },

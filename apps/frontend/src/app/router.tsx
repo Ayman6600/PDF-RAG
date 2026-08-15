@@ -3,7 +3,6 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Layout } from '../components/layout/Layout';
 import { Login } from '../pages/Login';
-import { HomePage } from '../pages/HomePage';
 import { Dashboard } from '../pages/Dashboard';
 import { DocumentsPage } from '../pages/DocumentsPage';
 import { ChatPage } from '../pages/ChatPage';
@@ -37,7 +36,7 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <HomePage /> },
+      { index: true, element: <ChatPage /> },
       { path: 'chat', element: <ChatPage /> },
       { path: 'documents', element: <DocumentsPage /> },
       { path: 'dashboard', element: <Dashboard /> },
