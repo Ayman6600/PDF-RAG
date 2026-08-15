@@ -39,7 +39,7 @@ export class KeywordSearchService {
         FROM "DocumentChunk" c
         JOIN "Document" d ON c."documentId" = d."id"
         WHERE d."organizationId" = $2
-          AND d."status" = 'READY'
+          AND d."status"::text = 'READY'
           ${docFilter}
           AND to_tsvector('english', c."content") @@ to_tsquery('english', $1)
         ORDER BY "score" DESC
@@ -72,7 +72,7 @@ export class KeywordSearchService {
         FROM "DocumentChunk" c
         JOIN "Document" d ON c."documentId" = d."id"
         WHERE d."organizationId" = $1
-          AND d."status" = 'READY'
+          AND d."status"::text = 'READY'
           AND c."content" ILIKE $2
         LIMIT $3`,
         organizationId,

@@ -48,7 +48,7 @@ export class VectorSearchService {
       FROM "DocumentChunk" c
       JOIN "Document" d ON c."documentId" = d."id"
       WHERE d."organizationId" = $2
-        AND d."status" = 'READY'
+        AND d."status"::text = 'READY'
         ${docFilter}
       ORDER BY c."embedding" <=> $1::vector ASC
       LIMIT $3`,

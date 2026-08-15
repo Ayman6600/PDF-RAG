@@ -83,8 +83,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
     setMessages((prev) => [...prev, initialAssistantMsg]);
 
-    // Construct SSE URL with optional document ID scope filter
-    let sseUrl = `/api/v1/conversations/${currentConvId}/stream?content=${encodeURIComponent(queryText)}`;
+    // Construct SSE URL with authentication token and optional document ID scope filter
+    const token = localStorage.getItem('access_token');
+    let sseUrl = `/api/v1/conversations/${currentConvId}/stream?content=${encodeURIComponent(queryText)}&token=${encodeURIComponent(token || '')}`;
     if (selectedDocId) {
       sseUrl += `&documentIds=${encodeURIComponent(selectedDocId)}`;
     }
