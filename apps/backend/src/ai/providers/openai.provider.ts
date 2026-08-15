@@ -11,10 +11,19 @@ export class OpenAIProvider implements LLMProvider {
 
   constructor(private readonly configService: ConfigService) {
     const apiKey = this.configService.get<string>('LLM_API_KEY');
-    this.model = this.configService.get<string>('LLM_MODEL') || 'gpt-4o-mini';
+    const provider = this.configService.get<string>('LLM_PROVIDER');
+    
+    const isGroq = provider === 'groq' || (apiKey && apiKey.startsWith('gsk_'));
+    const defaultModel = isGroq ? 'llama-3.3-70b-versatile' : 'gpt-4o-mini';
+    this.model = this.configService.get<string>('LLM_MODEL') || defaultModel;
 
     if (apiKey && apiKey !== 'mock-key') {
-      this.openai = new OpenAI({ apiKey });
+      const options: any = { apiKey };
+      if (isGroq) {
+        options.baseURL = 'https://api.groq.com/openai/v1';
+        this.logger.log(`Initialized Groq Cloud AI Adapter with model: ${this.model}`);
+      }
+      this.openai = new OpenAI(options);
     }
   }
 

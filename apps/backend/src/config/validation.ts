@@ -15,7 +15,7 @@ export const envSchema = z.object({
   S3_ACCESS_KEY: z.string().optional(),
   S3_SECRET_KEY: z.string().optional(),
   STORAGE_LOCAL_PATH: z.string().default('./uploads'),
-  LLM_PROVIDER: z.enum(['openai', 'anthropic', 'google', 'local']).default('openai'),
+  LLM_PROVIDER: z.enum(['openai', 'groq', 'anthropic', 'google', 'local']).default('groq'),
   LLM_API_KEY: z.string().default('mock-key'),
   LLM_MODEL: z.string().default('gpt-4o-mini'),
   EMBEDDING_PROVIDER: z.enum(['openai', 'google', 'local']).default('openai'),
