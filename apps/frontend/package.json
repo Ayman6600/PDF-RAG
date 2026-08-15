@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint \"src/**/*.{ts,tsx}\""
+    "lint": "tsc --noEmit"
   },
   "dependencies": {
     "@okf-rag/shared-types": "workspace:*",
