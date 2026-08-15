@@ -21,7 +21,7 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+        sans: ['Roboto', 'sans-serif'],
       },
     },
   },

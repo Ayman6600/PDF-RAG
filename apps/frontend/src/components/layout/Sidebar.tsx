@@ -1,12 +1,13 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, FileText, MessageSquare, Settings, ShieldCheck } from 'lucide-react';
+import { Home, LayoutDashboard, FileText, MessageSquare, Settings, ShieldCheck } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
   const navItems = [
-    { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/', label: 'Home', icon: Home },
     { to: '/chat', label: 'Document Workspace', icon: MessageSquare },
     { to: '/documents', label: 'Document Library', icon: FileText },
+    { to: '/dashboard', label: 'Dashboard Metrics', icon: LayoutDashboard },
     { to: '/settings', label: 'Settings', icon: Settings },
   ];
 
@@ -30,6 +31,7 @@ export const Sidebar: React.FC = () => {
               <NavLink
                 key={item.to}
                 to={item.to}
+                end={item.to === '/'}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     isActive
