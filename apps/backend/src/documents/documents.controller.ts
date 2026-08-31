@@ -29,7 +29,13 @@ export class DocumentsController {
   @Post()
   @ApiOperation({ summary: 'Upload a PDF document' })
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: {
+        fileSize: 50 * 1024 * 1024, // 50MB Max PDF
+      },
+    }),
+  )
   async uploadDocument(
     @UploadedFile() file: Express.Multer.File,
     @CurrentUser() user: RequestUser,

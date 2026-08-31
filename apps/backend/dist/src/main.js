@@ -14,10 +14,41 @@ const transform_interceptor_1 = require("./common/interceptors/transform.interce
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, { bufferLogs: true });
     app.useLogger(app.get(nestjs_pino_1.Logger));
-    app.use((0, helmet_1.default)());
-    const corsOrigin = process.env.CORS_ORIGIN;
+    app.use((0, helmet_1.default)({
+        crossOriginResourcePolicy: { policy: 'cross-origin' },
+        crossOriginEmbedderPolicy: false,
+    }));
+    const corsOriginEnv = process.env.CORS_ORIGIN;
     app.enableCors({
-        origin: !corsOrigin || corsOrigin === '*' ? true : corsOrigin.includes(',') ? corsOrigin.split(',').map(s => s.trim()) : corsOrigin,
+        origin: (origin, callback) => {
+            if (!origin)
+                return callback(null, true);
+            if (!corsOriginEnv || corsOriginEnv === '*' || corsOriginEnv.toLowerCase() === 'all') {
+                return callback(null, true);
+            }
+            const allowedOrigins = corsOriginEnv
+                .split(',')
+                .map((o) => o.trim().replace(/\/+$/, ''));
+            const cleanOrigin = origin.replace(/\/+$/, '');
+            if (allowedOrigins.includes(cleanOrigin) ||
+                allowedOrigins.some((allowed) => allowed.includes('*') && new RegExp('^' + allowed.replace(/\*/g, '.*') + '$').test(cleanOrigin)) ||
+                cleanOrigin.endsWith('.vercel.app') ||
+                cleanOrigin.includes('localhost')) {
+                return callback(null, true);
+            }
+            return callback(null, true);
+        },
+        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+        allowedHeaders: [
+            'Content-Type',
+            'Accept',
+            'Authorization',
+            'X-Requested-With',
+            'Origin',
+            'Range',
+            'x-request-id',
+        ],
+        exposedHeaders: ['Content-Disposition', 'Content-Length', 'Content-Range'],
         credentials: true,
     });
     app.setGlobalPrefix('api/v1');

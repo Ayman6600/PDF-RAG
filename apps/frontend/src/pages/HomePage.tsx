@@ -100,9 +100,7 @@ export const HomePage: React.FC = () => {
     formData.append('file', file);
 
     try {
-      const res: any = await api.post('/documents', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const res: any = await api.post('/documents', formData);
       fetchDocuments();
       navigate(`/chat?documentId=${res.id || res.data?.id}`);
     } catch (err: any) {

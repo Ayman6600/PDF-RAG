@@ -72,12 +72,16 @@ export class DocumentsService {
 
     // Queue Async BullMQ Ingestion Job
     try {
-      await this.pdfQueue.add('process-pdf', { documentId: document.id });
-    } catch {
-      // Fallback: If Redis is offline in dev, process in background promise
+      await Promise.race([
+        this.pdfQueue.add('process-pdf', { documentId: document.id }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Queue dispatch timeout')), 3000)),
+      ]);
+    } catch (err: any) {
+      this.logger.warn(`BullMQ queue dispatch warning (${err?.message}). Running fallback background worker.`);
+      // Fallback: If Redis is slow or offline, process in background promise
       setImmediate(() => {
-        this.ingestionService.processDocument(document.id).catch((err) => {
-          this.logger.error(`Fallback background ingestion failed: ${err.message}`);
+        this.ingestionService.processDocument(document.id).catch((e) => {
+          this.logger.error(`Fallback background ingestion failed: ${e.message}`);
         });
       });
     }

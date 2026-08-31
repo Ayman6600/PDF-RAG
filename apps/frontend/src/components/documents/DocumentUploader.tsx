@@ -30,9 +30,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onUploadSucc
     formData.append('file', file);
 
     try {
-      await api.post('/documents', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      await api.post('/documents', formData);
       setSuccess(`"${file.name}" uploaded successfully. BullMQ worker is processing document into OKF knowledge format.`);
       onUploadSuccess();
     } catch (err: any) {

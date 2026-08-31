@@ -94,12 +94,16 @@ let DocumentsService = DocumentsService_1 = class DocumentsService {
             },
         });
         try {
-            await this.pdfQueue.add('process-pdf', { documentId: document.id });
+            await Promise.race([
+                this.pdfQueue.add('process-pdf', { documentId: document.id }),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Queue dispatch timeout')), 3000)),
+            ]);
         }
-        catch {
+        catch (err) {
+            this.logger.warn(`BullMQ queue dispatch warning (${err?.message}). Running fallback background worker.`);
             setImmediate(() => {
-                this.ingestionService.processDocument(document.id).catch((err) => {
-                    this.logger.error(`Fallback background ingestion failed: ${err.message}`);
+                this.ingestionService.processDocument(document.id).catch((e) => {
+                    this.logger.error(`Fallback background ingestion failed: ${e.message}`);
                 });
             });
         }

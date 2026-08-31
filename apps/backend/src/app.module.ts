@@ -45,13 +45,30 @@ import { DraftsModule } from './drafts/drafts.module';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         const redisUrl = config.get<string>('REDIS_URL') || 'redis://localhost:6379';
-        const url = new URL(redisUrl);
-        return {
-          connection: {
-            host: url.hostname,
-            port: parseInt(url.port || '6379', 10),
-          },
-        };
+        try {
+          const url = new URL(redisUrl);
+          const isTls = url.protocol === 'rediss:';
+          return {
+            connection: {
+              host: url.hostname || 'localhost',
+              port: parseInt(url.port || '6379', 10),
+              username: url.username || undefined,
+              password: url.password || undefined,
+              tls: isTls ? { rejectUnauthorized: false } : undefined,
+              maxRetriesPerRequest: null,
+              enableReadyCheck: false,
+              connectTimeout: 5000,
+            },
+          };
+        } catch {
+          return {
+            connection: {
+              host: 'localhost',
+              port: 6379,
+              maxRetriesPerRequest: null,
+            },
+          };
+        }
       },
     }),
     DatabaseModule,

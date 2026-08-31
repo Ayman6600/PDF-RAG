@@ -4,12 +4,15 @@ const apiBase = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.repl
 
 export const api = axios.create({
   baseURL: `${apiBase}/api/v1`,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
-// Request token interceptor is managed dynamically by AuthProvider in AuthContext.tsx
+// Automatically clean headers for FormData payloads
+api.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+  return config;
+});
 
 api.interceptors.response.use(
   (response) => response.data,

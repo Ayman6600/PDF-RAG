@@ -56,13 +56,31 @@ exports.AppModule = AppModule = __decorate([
                 inject: [config_1.ConfigService],
                 useFactory: (config) => {
                     const redisUrl = config.get('REDIS_URL') || 'redis://localhost:6379';
-                    const url = new URL(redisUrl);
-                    return {
-                        connection: {
-                            host: url.hostname,
-                            port: parseInt(url.port || '6379', 10),
-                        },
-                    };
+                    try {
+                        const url = new URL(redisUrl);
+                        const isTls = url.protocol === 'rediss:';
+                        return {
+                            connection: {
+                                host: url.hostname || 'localhost',
+                                port: parseInt(url.port || '6379', 10),
+                                username: url.username || undefined,
+                                password: url.password || undefined,
+                                tls: isTls ? { rejectUnauthorized: false } : undefined,
+                                maxRetriesPerRequest: null,
+                                enableReadyCheck: false,
+                                connectTimeout: 5000,
+                            },
+                        };
+                    }
+                    catch {
+                        return {
+                            connection: {
+                                host: 'localhost',
+                                port: 6379,
+                                maxRetriesPerRequest: null,
+                            },
+                        };
+                    }
                 },
             }),
             database_module_1.DatabaseModule,

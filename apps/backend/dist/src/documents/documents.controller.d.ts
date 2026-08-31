@@ -6,18 +6,18 @@ export declare class DocumentsController {
     constructor(documentsService: DocumentsService);
     uploadDocument(file: Express.Multer.File, user: RequestUser): Promise<{
         id: string;
-        name: string;
-        createdAt: Date;
-        updatedAt: Date;
         organizationId: string;
-        status: import(".prisma/client").$Enums.DocumentStatus;
-        pageCount: number;
+        name: string;
         filename: string;
         mimeType: string;
         fileSize: number;
         storageKey: string;
+        status: import(".prisma/client").$Enums.DocumentStatus;
+        pageCount: number;
         checksum: string;
         errorMessage: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     getDocuments(user: RequestUser, search?: string, status?: string): Promise<({
         _count: {
@@ -26,60 +26,60 @@ export declare class DocumentsController {
         };
     } & {
         id: string;
-        name: string;
-        createdAt: Date;
-        updatedAt: Date;
         organizationId: string;
-        status: import(".prisma/client").$Enums.DocumentStatus;
-        pageCount: number;
+        name: string;
         filename: string;
         mimeType: string;
         fileSize: number;
         storageKey: string;
+        status: import(".prisma/client").$Enums.DocumentStatus;
+        pageCount: number;
         checksum: string;
         errorMessage: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
     getDocumentById(id: string, user: RequestUser): Promise<{
         sections: {
             id: string;
             createdAt: Date;
-            content: string;
+            sectionIndex: number;
+            documentId: string;
             title: string;
             pageStart: number;
             pageEnd: number;
-            documentId: string;
-            sectionIndex: number;
+            content: string;
             yamlMetadata: string | null;
         }[];
         ingestionJobs: {
             id: string;
+            errorMessage: string | null;
             createdAt: Date;
             updatedAt: Date;
-            errorMessage: string | null;
+            documentId: string;
             stage: import(".prisma/client").$Enums.IngestionStage;
             progress: number;
             logs: import("@prisma/client/runtime/library").JsonValue | null;
-            documentId: string;
         }[];
     } & {
         id: string;
-        name: string;
-        createdAt: Date;
-        updatedAt: Date;
         organizationId: string;
-        status: import(".prisma/client").$Enums.DocumentStatus;
-        pageCount: number;
+        name: string;
         filename: string;
         mimeType: string;
         fileSize: number;
         storageKey: string;
+        status: import(".prisma/client").$Enums.DocumentStatus;
+        pageCount: number;
         checksum: string;
         errorMessage: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     getDocumentChunks(id: string, user: RequestUser): Promise<{
         id: string;
-        content: string;
         documentId: string;
+        content: string;
         sectionId: string | null;
         pageNumber: number;
         chunkIndex: number;

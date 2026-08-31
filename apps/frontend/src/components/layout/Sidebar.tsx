@@ -83,9 +83,7 @@ export const Sidebar: React.FC = () => {
     formData.append('file', file);
 
     try {
-      await api.post('/documents', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      await api.post('/documents', formData);
       fetchDocuments();
     } catch (err: any) {
       alert(err.error?.message || 'Failed to upload PDF');
