@@ -26,7 +26,7 @@ export class DraftsService {
         },
         orderBy: { sectionIndex: 'asc' },
       });
-      context = sections.map((s) => `### Reference Section: ${s.title}\n${s.content}`).join('\n\n');
+      context = sections.map((s: { title: string; content: string }) => `### Reference Section: ${s.title}\n${s.content}`).join('\n\n');
     } else if (dto.documentIds && dto.documentIds.length > 0) {
       const sections = await this.prisma.documentSection.findMany({
         where: {
@@ -38,7 +38,7 @@ export class DraftsService {
           { sectionIndex: 'asc' },
         ],
       });
-      context = sections.map((s) => `### Reference Section: ${s.title}\n${s.content}`).join('\n\n');
+      context = sections.map((s: { title: string; content: string }) => `### Reference Section: ${s.title}\n${s.content}`).join('\n\n');
     }
 
     const systemPrompt = `You are an expert corporate writer, technical analyst, and document intelligence editor.
@@ -82,7 +82,7 @@ Begin the markdown draft:`;
           { sectionIndex: 'asc' },
         ],
       });
-      context = sections.map((s) => `### Reference Section: ${s.title}\n${s.content}`).join('\n\n');
+      context = sections.map((s: { title: string; content: string }) => `### Reference Section: ${s.title}\n${s.content}`).join('\n\n');
     }
 
     const systemPrompt = `You are an expert corporate document editor.
