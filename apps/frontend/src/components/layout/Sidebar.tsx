@@ -109,6 +109,21 @@ export const Sidebar: React.FC = () => {
     }
   };
 
+  const handleDeleteDoc = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm('Are you sure you want to delete this PDF and all associated vector segments?')) return;
+    try {
+      await api.delete(`/documents/${id}`);
+      if (selectedDocId === id) {
+        searchParams.delete('documentId');
+        setSearchParams(searchParams);
+      }
+      fetchDocuments();
+    } catch (err: any) {
+      alert('Failed to delete PDF');
+    }
+  };
+
   const handleNewChat = () => {
     searchParams.delete('conversationId');
     searchParams.delete('documentId');
@@ -258,13 +273,22 @@ export const Sidebar: React.FC = () => {
                         {doc.pageCount || 1} Pages • {doc.status}
                       </div>
                     </div>
-                    <button
-                      onClick={(e) => handleViewPDF(e, doc.id, doc.name)}
-                      className="p-1 text-muted-ink hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                      title="Quick View PDF"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        onClick={(e) => handleViewPDF(e, doc.id, doc.name)}
+                        className="p-1 text-muted-ink hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                        title="Quick View PDF"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={(e) => handleDeleteDoc(doc.id, e)}
+                        className="p-1 text-muted-ink hover:text-error-red hover:bg-error-red/10 rounded-lg transition-colors"
+                        title="Delete PDF"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))
