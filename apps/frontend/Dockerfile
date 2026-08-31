@@ -4,12 +4,15 @@ WORKDIR /app
 
 RUN npm install -g pnpm
 
-COPY package.json pnpm-workspace.yaml turbo.json ./
+# Copy repository manifests and lockfiles
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .npmrc ./
 COPY packages ./packages
 COPY apps/frontend ./apps/frontend
+COPY apps/backend/package.json ./apps/backend/package.json
 
 RUN pnpm install --frozen-lockfile
-RUN pnpm --filter frontend run build
+RUN pnpm --filter @okf-rag/shared-types run build
+RUN pnpm --filter @okf-rag/frontend run build
 
 FROM nginx:alpine AS runner
 
