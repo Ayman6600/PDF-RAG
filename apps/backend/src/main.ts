@@ -13,8 +13,9 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
 
   app.use(helmet());
+  const corsOrigin = process.env.CORS_ORIGIN;
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: !corsOrigin || corsOrigin === '*' ? true : corsOrigin.includes(',') ? corsOrigin.split(',').map(s => s.trim()) : corsOrigin,
     credentials: true,
   });
 

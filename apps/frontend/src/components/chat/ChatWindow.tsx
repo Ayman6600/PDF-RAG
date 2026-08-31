@@ -90,7 +90,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
     // Construct SSE URL with authentication token and optional document ID scope filter
     const token = await getToken();
-    let sseUrl = `/api/v1/conversations/${currentConvId}/stream?content=${encodeURIComponent(queryText)}&token=${encodeURIComponent(token || '')}`;
+    const apiBase = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/+$/, '') : '';
+    let sseUrl = `${apiBase}/api/v1/conversations/${currentConvId}/stream?content=${encodeURIComponent(queryText)}&token=${encodeURIComponent(token || '')}`;
     if (selectedDocId) {
       sseUrl += `&documentIds=${encodeURIComponent(selectedDocId)}`;
     }

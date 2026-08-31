@@ -50,7 +50,8 @@ export const PDFViewerModal: React.FC<PDFViewerModalProps> = ({
     );
   }
 
-  const pdfUrl = `/api/v1/documents/${documentId}/file?token=${encodeURIComponent(token)}`;
+  const apiBase = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/+$/, '') : '';
+  const pdfUrl = `${apiBase}/api/v1/documents/${documentId}/file?token=${encodeURIComponent(token)}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
