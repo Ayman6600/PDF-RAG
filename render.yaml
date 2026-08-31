@@ -1,0 +1,71 @@
+services:
+  # ==========================================
+  # Backend Web Service (NestJS API)
+  # ==========================================
+  - type: web
+    name: okf-rag-backend
+    runtime: docker
+    dockerfilePath: apps/backend/Dockerfile
+    dockerContext: .
+    plan: starter
+    region: oregon
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_EXPIRATION
+        value: 1h
+      - key: JWT_REFRESH_EXPIRATION
+        value: 7d
+      - key: STORAGE_PROVIDER
+        value: local
+      - key: STORAGE_LOCAL_PATH
+        value: ./uploads
+      - key: LLM_PROVIDER
+        value: groq
+      - key: LLM_API_KEY
+        sync: false
+      - key: LLM_MODEL
+        value: gpt-4o-mini
+      - key: EMBEDDING_PROVIDER
+        value: openai
+      - key: EMBEDDING_MODEL
+        value: text-embedding-3-small
+      - key: EMBEDDING_DIMENSION
+        value: 1536
+      - key: CORS_ORIGIN
+        sync: false
+      - key: RATE_LIMIT_TTL
+        value: 60
+      - key: RATE_LIMIT_LIMIT
+        value: 100
+
+  # ==========================================
+  # Frontend Static Site (React + Vite SPA)
+  # ==========================================
+  - type: web
+    name: okf-rag-frontend
+    runtime: static
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @okf-rag/shared-types run build && pnpm --filter @okf-rag/frontend run build
+    staticPublishPath: apps/frontend/dist
+    autoDeploy: true
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        sync: false

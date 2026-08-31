@@ -15,6 +15,7 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
+    "check": "pnpm run lint && pnpm run test && pnpm run build",
     "eval": "pnpm --filter backend eval",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",

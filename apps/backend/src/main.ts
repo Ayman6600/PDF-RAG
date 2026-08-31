@@ -43,10 +43,13 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
+  // Enable graceful shutdown hooks for SIGTERM / SIGINT handling on Render/Cloud
+  app.enableShutdownHooks();
+
   const port = process.env.PORT || 3000;
-  await app.listen(port);
-  console.log(`🚀 OKF-RAG Backend running on http://localhost:${port}/api/v1`);
-  console.log(`📚 Swagger Docs available on http://localhost:${port}/api/docs`);
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 OKF-RAG Backend running on http://0.0.0.0:${port}/api/v1`);
+  console.log(`📚 Swagger Docs available on http://0.0.0.0:${port}/api/docs`);
 }
 
 bootstrap();
