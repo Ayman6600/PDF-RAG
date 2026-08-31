@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
-  Sparkles, 
   ArrowRight, 
   UploadCloud, 
   Layers, 
@@ -15,7 +14,8 @@ import {
   Lock,
   ChevronRight,
   Shield,
-  Activity
+  Activity,
+  Compass
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
@@ -123,39 +123,36 @@ export const HomePage: React.FC = () => {
     return (
       <div className="max-w-6xl mx-auto space-y-16 py-10 px-4 select-none font-sans">
         
-        {/* Sleek Landing Hero */}
-        <div className="text-center space-y-6 relative py-12">
-          {/* Subtle abstract glass background blob */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-gradient-to-br from-indigo-500/10 via-emerald-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
-
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/5 border border-primary/20 text-primary text-xs font-semibold tracking-wide animate-fade-in">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
-            <span>Introducing RAG-PDF Platform</span>
+        {/* Clean, Human-Focused Landing Hero */}
+        <div className="text-center space-y-6 relative py-10">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-soft border border-hairline text-ink text-xs font-semibold tracking-wide animate-fade-in shadow-xs">
+            <FileText className="w-3.5 h-3.5 text-primary" />
+            <span>Document Intelligence Workspace</span>
           </div>
 
           <h1 className="text-4xl sm:text-6xl font-extrabold text-ink tracking-tight leading-tight max-w-4xl mx-auto">
             Transform PDFs into <br />
-            <span className="bg-gradient-to-r from-indigo-600 via-primary-600 to-emerald-600 bg-clip-text text-transparent">
-              Grounded AI Intelligence
+            <span className="text-primary font-bold">
+              Grounded Knowledge & Drafts
             </span>
           </h1>
 
           <p className="text-sm sm:text-base text-muted-ink leading-relaxed max-w-2xl mx-auto font-normal">
-            An Apple-inspired document intelligence platform. Analyze, query, and generate professional workspace drafts with vector-grounded hybrid search and page-level citations.
+            A clean, human-centered document intelligence platform. Analyze, research, and compose structured workspace drafts grounded directly in verified PDF citations.
           </p>
 
           <div className="pt-4 flex items-center justify-center gap-4">
             <Link
               to="/login"
-              className="px-8 py-3.5 bg-primary hover:bg-primary-600 text-white rounded-full font-bold text-xs flex items-center gap-2 shadow-md hover:scale-[1.03] active:scale-95 transition-all"
+              className="px-8 py-3.5 bg-primary hover:bg-primary-600 text-white rounded-full font-bold text-xs flex items-center gap-2 shadow-sm hover:scale-[1.02] active:scale-95 transition-all"
             >
-              <span>Get Started Free</span>
+              <span>Get Started</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             
             <a
               href="#features"
-              className="px-6 py-3.5 bg-canvas hover:bg-canvas-parchment border border-hairline text-ink rounded-full font-bold text-xs flex items-center gap-2 hover:scale-[1.03] active:scale-95 transition-all"
+              className="px-6 py-3.5 bg-canvas hover:bg-canvas-parchment border border-hairline text-ink rounded-full font-bold text-xs flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all"
             >
               <span>Explore Features</span>
             </a>
@@ -163,12 +160,12 @@ export const HomePage: React.FC = () => {
         </div>
 
         {/* Dynamic Visual Mockup of the Platform */}
-        <div className="relative border border-hairline bg-canvas rounded-2xl shadow-xl overflow-hidden max-w-4xl mx-auto">
+        <div className="relative border border-hairline bg-canvas rounded-2xl shadow-md overflow-hidden max-w-4xl mx-auto">
           {/* Mock Browser Title Bar */}
           <div className="h-10 bg-canvas-parchment border-b border-hairline flex items-center px-4 gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-rose-400" />
-            <div className="w-3 h-3 rounded-full bg-amber-400" />
-            <div className="w-3 h-3 rounded-full bg-emerald-400" />
+            <div className="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700" />
+            <div className="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700" />
+            <div className="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700" />
             <div className="text-[10px] text-muted-ink font-mono mx-auto pl-10 select-none">
               workspace.rag-pdf.internal/chat
             </div>
@@ -177,7 +174,7 @@ export const HomePage: React.FC = () => {
           <div className="grid grid-cols-3 h-[380px] text-xs">
             {/* Mock Sidebar */}
             <div className="col-span-1 border-r border-hairline bg-canvas-parchment/40 p-4 space-y-3">
-              <div className="font-bold text-[10px] text-muted-ink uppercase tracking-wider">Document Indices</div>
+              <div className="font-bold text-[10px] text-muted-ink uppercase tracking-wider">Document Library</div>
               <div className="space-y-2">
                 <div className="p-2 bg-canvas border border-hairline rounded-lg flex items-center gap-2 shadow-xs">
                   <FileText className="w-4 h-4 text-primary shrink-0" />
@@ -198,17 +195,17 @@ export const HomePage: React.FC = () => {
             <div className="col-span-2 p-4 flex flex-col justify-between bg-canvas">
               <div className="space-y-3 overflow-y-auto">
                 <div className="flex gap-2">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-bold text-[10px]">US</div>
+                  <div className="w-6 h-6 rounded-full bg-surface-strong text-ink flex items-center justify-center shrink-0 font-bold text-[10px] border border-hairline">US</div>
                   <div className="bg-canvas-parchment/60 p-2.5 rounded-2xl rounded-tl-none border border-hairline text-[11px] text-ink max-w-[85%]">
                     Summarize the Q2 performance highlights.
                   </div>
                 </div>
 
                 <div className="flex gap-2">
-                  <div className="w-6 h-6 rounded-full bg-indigo-500/10 text-indigo-600 flex items-center justify-center shrink-0 font-bold text-[10px]"><Sparkles className="w-3.5 h-3.5" /></div>
+                  <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-bold text-[10px] border border-primary/20"><FileText className="w-3.5 h-3.5" /></div>
                   <div className="bg-canvas p-2.5 rounded-2xl rounded-tl-none border border-hairline text-[11px] text-ink max-w-[85%] space-y-1.5 shadow-xs">
                     <p>Q2 net revenue increased by 14% year-over-year, driven by cloud workspace adoption.</p>
-                    <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-primary/10 text-primary font-mono text-[9px] font-bold">
+                    <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-soft text-primary font-mono text-[9px] font-semibold border border-hairline">
                       financial_report_2026.pdf • Page 12
                     </div>
                   </div>
@@ -229,16 +226,16 @@ export const HomePage: React.FC = () => {
         </div>
 
         {/* Feature Cards Grid */}
-        <div id="features" className="space-y-8 pt-8">
+        <div id="features" className="space-y-8 pt-6">
           <div className="text-center space-y-2">
-            <h2 className="text-2xl font-extrabold text-ink tracking-tight">Enterprise-Grade Document Engines</h2>
-            <p className="text-xs text-muted-ink max-w-xl mx-auto">Equipped with hybrid search infrastructure for perfect accuracy.</p>
+            <h2 className="text-2xl font-extrabold text-ink tracking-tight">Structured Document Intelligence</h2>
+            <p className="text-xs text-muted-ink max-w-xl mx-auto">Equipped with hybrid search infrastructure for verified precision and clarity.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-canvas p-6 rounded-2xl border border-hairline shadow-sm hover:scale-[1.02] transition-transform">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-4">
-                <Layers className="w-5.5 h-5.5" />
+            <div className="bg-canvas p-6 rounded-2xl border border-hairline shadow-sm hover:border-border-strong transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-surface-soft text-ink flex items-center justify-center mb-4 border border-hairline">
+                <Layers className="w-5 h-5 text-primary" />
               </div>
               <h3 className="font-bold text-ink text-sm mb-1.5">Section Outline Extraction</h3>
               <p className="text-xs text-muted-ink leading-relaxed font-normal">
@@ -246,9 +243,9 @@ export const HomePage: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-canvas p-6 rounded-2xl border border-hairline shadow-sm hover:scale-[1.02] transition-transform">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
-                <Zap className="w-5.5 h-5.5" />
+            <div className="bg-canvas p-6 rounded-2xl border border-hairline shadow-sm hover:border-border-strong transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-surface-soft text-ink flex items-center justify-center mb-4 border border-hairline">
+                <Zap className="w-5 h-5 text-primary" />
               </div>
               <h3 className="font-bold text-ink text-sm mb-1.5">Hybrid Vector Search</h3>
               <p className="text-xs text-muted-ink leading-relaxed font-normal">
@@ -256,11 +253,11 @@ export const HomePage: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-canvas p-6 rounded-2xl border border-hairline shadow-sm hover:scale-[1.02] transition-transform">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-4">
-                <CheckCircle2 className="w-5.5 h-5.5" />
+            <div className="bg-canvas p-6 rounded-2xl border border-hairline shadow-sm hover:border-border-strong transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-surface-soft text-ink flex items-center justify-center mb-4 border border-hairline">
+                <CheckCircle2 className="w-5 h-5 text-primary" />
               </div>
-              <h3 className="font-bold text-ink text-sm mb-1.5">Office Drafting Drawer</h3>
+              <h3 className="font-bold text-ink text-sm mb-1.5">Office Drafting Workspace</h3>
               <p className="text-xs text-muted-ink leading-relaxed font-normal">
                 Draft professional specifications, project memos, and executive drafts inside a dual-pane editor pulling straight from document facts.
               </p>
@@ -274,47 +271,44 @@ export const HomePage: React.FC = () => {
 
   // Dashboard View (Authenticated User)
   return (
-    <div className="max-w-6xl mx-auto space-y-10 pb-12 select-none font-sans">
+    <div className="max-w-6xl mx-auto space-y-8 pb-12 select-none font-sans">
       
-      {/* Dynamic Header / Hero */}
-      <div className="relative rounded-3xl bg-gradient-to-br from-indigo-900/10 via-slate-500/5 to-emerald-500/5 p-8 md:p-12 overflow-hidden border border-hairline shadow-sm">
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 right-10 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 max-w-3xl space-y-5">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold tracking-wide">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+      {/* Clean, Refined Header */}
+      <div className="relative rounded-2xl bg-canvas p-8 md:p-10 border border-hairline shadow-sm">
+        <div className="relative z-10 max-w-3xl space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-soft border border-hairline text-ink text-xs font-semibold tracking-wide">
+            <Compass className="w-3.5 h-3.5 text-primary" />
             <span>Workspace Active</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-extrabold text-ink tracking-tight leading-tight">
-            Welcome back, <span className="bg-gradient-to-r from-indigo-600 via-primary-600 to-indigo-700 bg-clip-text text-transparent">{user?.name || 'Workspace User'}</span>.
+            Welcome back, <span className="text-primary">{user?.name || 'Workspace User'}</span>.
             <br />
             Transform PDFs into grounded documents.
           </h1>
 
           <p className="text-xs sm:text-sm text-muted-ink leading-relaxed max-w-2xl font-normal">
-            Query your PDF library using pgvector similarity, Reciprocal Rank Fusion, and Cross-Encoder reranking. Ask questions, extract structured facts, and retrieve page-level citations instantly.
+            Query your PDF library using vector similarity, full-text search, and reranking. Ask questions, extract structured facts, and retrieve page-level citations instantly.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-3">
             <Link
               to="/chat"
-              className="px-5 py-3 bg-primary hover:bg-primary-600 text-white rounded-full font-bold text-xs flex items-center gap-1.5 shadow-sm hover:scale-[1.02] active:scale-95 transition-all"
+              className="px-5 py-2.5 bg-primary hover:bg-primary-600 text-white rounded-full font-bold text-xs flex items-center gap-1.5 shadow-sm hover:scale-[1.02] active:scale-95 transition-all"
             >
               <span>Launch Grounded Chat</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
 
-            <label className="px-5 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 text-emerald-700 dark:text-emerald-400 rounded-full font-bold text-xs flex items-center gap-1.5 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer">
+            <label className="px-5 py-2.5 bg-surface-soft hover:bg-surface-strong border border-hairline text-ink rounded-full font-bold text-xs flex items-center gap-1.5 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer">
               {isUploading ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
                   <span>Ingesting File...</span>
                 </>
               ) : (
                 <>
-                  <UploadCloud className="w-3.5 h-3.5 text-emerald-600" />
+                  <UploadCloud className="w-3.5 h-3.5 text-primary" />
                   <span>Quick Ingest PDF</span>
                 </>
               )}
@@ -470,32 +464,32 @@ export const HomePage: React.FC = () => {
       {/* Static features breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div className="bg-canvas p-5 rounded-xl border border-hairline shadow-xs">
-          <div className="w-9 h-9 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-3">
-            <Layers className="w-5 h-5" />
+          <div className="w-9 h-9 rounded-lg bg-surface-soft text-ink flex items-center justify-center mb-3 border border-hairline">
+            <Layers className="w-5 h-5 text-primary" />
           </div>
           <h4 className="font-bold text-ink text-xs mb-1">Outline Extraction</h4>
           <p className="text-[10px] text-muted-ink leading-relaxed">
-            Directly parse multi-page PDFs into structured OKF outlines with YAML metadata and page citation coordinates.
+            Directly parse multi-page PDFs into structured outlines with metadata and page citation coordinates.
           </p>
         </div>
 
         <div className="bg-canvas p-5 rounded-xl border border-hairline shadow-xs">
-          <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-3">
-            <Zap className="w-5 h-5" />
+          <div className="w-9 h-9 rounded-lg bg-surface-soft text-ink flex items-center justify-center mb-3 border border-hairline">
+            <Zap className="w-5 h-5 text-primary" />
           </div>
           <h4 className="font-bold text-ink text-xs mb-1">Hybrid Retrieval</h4>
           <p className="text-[10px] text-muted-ink leading-relaxed">
-            pgvector similarity fused with PostgreSQL full-text search (TSVector) and fused via Reciprocal Rank Fusion.
+            Vector similarity fused with full-text search and ranked via Reciprocal Rank Fusion.
           </p>
         </div>
 
         <div className="bg-canvas p-5 rounded-xl border border-hairline shadow-xs">
-          <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-3">
-            <CheckCircle2 className="w-5 h-5" />
+          <div className="w-9 h-9 rounded-lg bg-surface-soft text-ink flex items-center justify-center mb-3 border border-hairline">
+            <CheckCircle2 className="w-5 h-5 text-primary" />
           </div>
           <h4 className="font-bold text-ink text-xs mb-1">Page-Level Citations</h4>
           <p className="text-[10px] text-muted-ink leading-relaxed">
-            Every AI statement is grounded. Clicking citations opens the target page in the embedded PDF drawer.
+            Every statement is grounded. Clicking citations opens the target page in the embedded PDF drawer.
           </p>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { 
-  Sparkles, 
+  PenTool, 
   Copy, 
   Check, 
   Download, 
@@ -516,8 +516,8 @@ export const DraftsPage: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>Generate Corporate Draft</span>
+                      <PenTool className="w-3.5 h-3.5" />
+                      <span>Generate Document Draft</span>
                     </>
                   )}
                 </button>
@@ -600,8 +600,8 @@ export const DraftsPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center p-8 text-center border border-dashed border-hairline rounded-2xl bg-canvas-parchment/30 select-none">
-                  <Sparkles className="w-10 h-10 text-muted-soft mb-2.5 animate-pulse" />
-                  <h4 className="text-xs font-bold text-ink">No Draft Generated Yet</h4>
+                  <FileText className="w-10 h-10 text-muted-soft mb-2.5 opacity-40" />
+                  <h4 className="text-xs font-bold text-ink">No Draft Composed Yet</h4>
                   <p className="text-[10px] text-muted-ink max-w-sm mt-1 leading-relaxed">
                     Choose one or more reference documents in the left panel, pick a template style, input your drafting prompts, and hit generate.
                   </p>

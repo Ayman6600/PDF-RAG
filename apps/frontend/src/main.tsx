@@ -20,8 +20,8 @@ const queryClient = new QueryClient({
 
 const MissingConfigScreen: React.FC = () => {
   return (
-    <div className="min-h-screen w-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#0b0c10] via-[#151821] to-[#0c0d12] p-6 text-white font-sans">
-      <div className="max-w-lg w-full bg-[#0f172a] border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
+    <div className="min-h-screen w-screen flex flex-col items-center justify-center bg-[#0d1117] p-6 text-white font-sans">
+      <div className="max-w-lg w-full bg-[#161b22] border border-slate-800 rounded-2xl p-8 shadow-xl space-y-6">
         <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-2xl font-bold">
           ⚠️
         </div>

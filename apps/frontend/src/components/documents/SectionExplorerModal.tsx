@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, HelpCircle, Lightbulb, ArrowRight, ChevronRight, Loader2, BookOpen, Layers } from 'lucide-react';
+import { X, HelpCircle, Lightbulb, ArrowRight, ChevronRight, Loader2, BookOpen, Layers } from 'lucide-react';
 import { api } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -195,12 +195,12 @@ export const SectionExplorerModal: React.FC<SectionExplorerModalProps> = ({
                       {selectedSection.content}
                     </div>
 
-                    {/* AI Insights & Suggested Questions */}
+                    {/* Summary & Suggested Questions */}
                     <div className="border-t border-hairline pt-6">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2 select-none">
-                          <Sparkles className="w-5 h-5 text-primary" />
-                          <h4 className="font-semibold text-ink text-sm tracking-apple-headline">AI Section Insights</h4>
+                          <BookOpen className="w-5 h-5 text-primary" />
+                          <h4 className="font-semibold text-ink text-sm tracking-apple-headline">Section Key Takeaways</h4>
                         </div>
 
                         {!activeInsights && !isInsightsLoading && (
@@ -208,8 +208,8 @@ export const SectionExplorerModal: React.FC<SectionExplorerModalProps> = ({
                             onClick={() => generateInsights(selectedSection.id)}
                             className="flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary-600 text-white rounded-full text-[11px] font-semibold transition-all active:scale-95 shadow-sm"
                           >
-                            <Sparkles className="w-3.5 h-3.5" />
-                            <span>Generate AI Insights</span>
+                            <BookOpen className="w-3.5 h-3.5" />
+                            <span>Generate Key Takeaways</span>
                           </button>
                         )}
                       </div>
