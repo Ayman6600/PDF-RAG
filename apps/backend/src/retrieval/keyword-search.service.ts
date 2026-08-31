@@ -73,6 +73,7 @@ export class KeywordSearchService {
         JOIN "Document" d ON c."documentId" = d."id"
         WHERE d."organizationId" = $1
           AND d."status"::text = 'READY'
+          ${docFilter}
           AND c."content" ILIKE $2
         LIMIT $3`,
         organizationId,

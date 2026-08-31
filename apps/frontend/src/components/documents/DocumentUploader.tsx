@@ -43,7 +43,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onUploadSucc
   };
 
   return (
-    <div className="glass-card rounded-2xl p-6 border border-border">
+    <div className="bg-canvas rounded-[18px] p-6 border border-hairline shadow-sm select-none">
       <div
         onDragOver={(e) => {
           e.preventDefault();
@@ -56,10 +56,10 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onUploadSucc
           handleFiles(e.dataTransfer.files);
         }}
         onClick={() => fileInputRef.current?.click()}
-        className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${
+        className={`border border-dashed rounded-[12px] p-8 text-center cursor-pointer transition-all duration-200 active:scale-[0.99] ${
           isDragging
-            ? 'border-indigo-500 bg-indigo-500/10 scale-[0.99]'
-            : 'border-border hover:border-indigo-500/50 hover:bg-surface-hover/50'
+            ? 'border-primary bg-primary/5'
+            : 'border-hairline hover:border-primary/50 hover:bg-canvas-parchment'
         }`}
       >
         <input
@@ -71,7 +71,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onUploadSucc
         />
 
         <div className="flex flex-col items-center gap-3">
-          <div className="w-14 h-14 rounded-2xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center border border-indigo-500/20 shadow-lg shadow-indigo-500/10">
+          <div className="w-14 h-14 rounded-full bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
             {isUploading ? (
               <Loader2 className="w-7 h-7 animate-spin" />
             ) : (
@@ -80,10 +80,10 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onUploadSucc
           </div>
 
           <div>
-            <h4 className="font-bold text-white text-base">
+            <h4 className="font-semibold text-ink text-base tracking-apple-headline">
               {isUploading ? 'Uploading & Queueing PDF...' : 'Drag & drop PDF files here'}
             </h4>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-muted-ink mt-1 tracking-apple-tight">
               Supports multi-page PDFs up to 50MB. Automatic text extraction, OKF transformation & pgvector indexing.
             </p>
           </div>
@@ -91,7 +91,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onUploadSucc
           <button
             type="button"
             disabled={isUploading}
-            className="mt-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold text-xs transition-colors shadow-md shadow-indigo-500/20"
+            className="mt-2 px-4 py-2 bg-primary hover:bg-primary-600 text-white rounded-full font-semibold text-xs transition-all active:scale-95 shadow-sm"
           >
             Browse Files
           </button>
@@ -99,14 +99,14 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onUploadSucc
       </div>
 
       {error && (
-        <div className="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-center gap-2">
+        <div className="mt-4 p-3 rounded-xl bg-error-red/5 border border-error-red/20 text-error-red text-xs flex items-center gap-2 font-medium">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {success && (
-        <div className="mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center gap-2">
+        <div className="mt-4 p-3 rounded-xl bg-[#30d158]/5 border border-[#30d158]/20 text-[#30d158] text-xs flex items-center gap-2 font-medium">
           <CheckCircle className="w-4 h-4 shrink-0" />
           <span>{success}</span>
         </div>

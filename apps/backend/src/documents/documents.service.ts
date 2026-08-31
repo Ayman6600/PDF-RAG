@@ -11,6 +11,7 @@ import { StorageService } from '../storage/storage.service';
 import { IngestionService } from '../ingestion/ingestion.service';
 import { DocumentStatus } from '@prisma/client';
 import * as crypto from 'crypto';
+import { LLMService } from '../ai/llm.service';
 
 @Injectable()
 export class DocumentsService {
@@ -20,6 +21,7 @@ export class DocumentsService {
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
     private readonly ingestionService: IngestionService,
+    private readonly llmService: LLMService,
     @InjectQueue('pdf-ingestion') private readonly pdfQueue: Queue,
   ) {}
 
@@ -173,5 +175,50 @@ export class DocumentsService {
   async getDocumentFileBuffer(documentId: string, organizationId: string): Promise<Buffer> {
     const doc = await this.getDocumentById(documentId, organizationId);
     return this.storageService.getFileBuffer(doc.storageKey);
+  }
+
+  async getSectionInsights(documentId: string, sectionId: string, organizationId: string) {
+    const doc = await this.getDocumentById(documentId, organizationId);
+
+    const section = await this.prisma.documentSection.findFirst({
+      where: { id: sectionId, documentId: doc.id },
+    });
+
+    if (!section) {
+      throw new NotFoundException(`Section with ID ${sectionId} not found`);
+    }
+
+    const systemPrompt = `You are an expert document intelligence assistant. Given a document section, your goal is to extract key insights.
+Respond ONLY with a valid JSON object matching this schema:
+{
+  "summary": "a concise one-sentence summary of the section's core content",
+  "questions": [
+    "question 1 that can be fully and specifically answered by this section",
+    "question 2 that can be fully and specifically answered by this section",
+    "question 3 that can be fully and specifically answered by this section"
+  ]
+}
+Do not include any other text, formatting, or markdown backticks outside of the raw JSON object. Ensure the JSON is valid and parsable.`;
+
+    const userPrompt = `Document Title: ${doc.name}\nSection Title: ${section.title}\nContent:\n${section.content}`;
+
+    const response = await this.llmService.generateAnswer(systemPrompt, userPrompt);
+    try {
+      let content = response.content.trim();
+      if (content.startsWith('```')) {
+        content = content.replace(/^```(json)?/, '').replace(/```$/, '').trim();
+      }
+      return JSON.parse(content);
+    } catch (e) {
+      this.logger.warn(`Failed to parse LLM JSON for section insights: ${response.content}. Using fallback.`);
+      return {
+        summary: `This section covers details regarding ${section.title} in the ${doc.name} document.`,
+        questions: [
+          `Summarize the key aspects of ${section.title}`,
+          `What are the main requirements of ${section.title}?`,
+          `Are there any specifications highlighted in ${section.title}?`
+        ]
+      };
+    }
   }
 }

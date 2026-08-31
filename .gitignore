@@ -7,10 +7,10 @@ build
 .DS_Store
 
 # Uploads & generated files
-uploads/*
-!uploads/.gitkeep
-knowledge/okf/*
-!knowledge/okf/.gitkeep
+**/uploads/
+**/knowledge/
+!**/uploads/.gitkeep
+!**/knowledge/.gitkeep
 
 # Environment
 .env

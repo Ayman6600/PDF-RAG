@@ -88,6 +88,16 @@ export class DocumentsController {
     return this.documentsService.reprocessDocument(id, user.organizationId);
   }
 
+  @Get(':id/sections/:sectionId/insights')
+  @ApiOperation({ summary: 'Get AI-generated summary and suggested questions for a section' })
+  async getSectionInsights(
+    @Param('id') id: string,
+    @Param('sectionId') sectionId: string,
+    @CurrentUser() user: RequestUser,
+  ) {
+    return this.documentsService.getSectionInsights(id, sectionId, user.organizationId);
+  }
+
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a document' })
   async deleteDocument(

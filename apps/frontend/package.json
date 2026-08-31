@@ -10,6 +10,7 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.61.3",
     "@okf-rag/shared-types": "workspace:*",
     "@tanstack/react-query": "^5.36.2",
     "axios": "^1.6.8",

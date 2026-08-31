@@ -1,8 +1,8 @@
 import React from 'react';
-import { SignIn } from '@clerk/clerk-react';
+import { SignUp } from '@clerk/clerk-react';
 import { ShieldCheck, Sparkles } from 'lucide-react';
 
-export const Login: React.FC = () => {
+export const Signup: React.FC = () => {
   return (
     <div className="min-h-screen w-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#0b0c10] via-[#151821] to-[#0c0d12] p-4 relative overflow-hidden font-sans select-none">
       
@@ -26,8 +26,8 @@ export const Login: React.FC = () => {
           </p>
         </div>
 
-        {/* Clerk Sign In Component */}
-        <SignIn
+        {/* Clerk Sign Up Component */}
+        <SignUp
           appearance={{
             variables: {
               colorPrimary: '#6366f1',
@@ -53,7 +53,7 @@ export const Login: React.FC = () => {
               footer: 'bg-[#0f172a]'
             }
           }}
-          signUpUrl="/signup"
+          signInUrl="/login"
           redirectUrl="/home"
         />
 
@@ -61,4 +61,3 @@ export const Login: React.FC = () => {
     </div>
   );
 };
-

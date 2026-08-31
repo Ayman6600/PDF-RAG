@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { DocumentUploader } from '../components/documents/DocumentUploader';
 import { DocumentList, DocumentItem } from '../components/documents/DocumentList';
 import { PDFViewerModal } from '../components/pdf/PDFViewerModal';
+import { SectionExplorerModal } from '../components/documents/SectionExplorerModal';
 import { api } from '../services/api';
 
 export const DocumentsPage: React.FC = () => {
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [selectedDoc, setSelectedDoc] = useState<{ id: string; name: string; page: number } | null>(null);
+  const [selectedExploreDoc, setSelectedExploreDoc] = useState<{ id: string; name: string } | null>(null);
 
   const fetchDocuments = async () => {
     try {
@@ -26,8 +28,8 @@ export const DocumentsPage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       <div>
-        <h2 className="text-2xl font-extrabold text-white tracking-wide">Document Management</h2>
-        <p className="text-xs text-gray-400 mt-1">Upload PDFs to ingest, parse, transform into OKF bundles, and index in pgvector.</p>
+        <h2 className="text-2xl font-semibold text-ink tracking-apple-headline">Document Management</h2>
+        <p className="text-xs text-muted-ink mt-1 tracking-apple-tight">Upload PDFs to ingest, parse, transform into OKF bundles, and index in pgvector.</p>
       </div>
 
       <DocumentUploader onUploadSuccess={fetchDocuments} />
@@ -36,6 +38,7 @@ export const DocumentsPage: React.FC = () => {
         documents={documents}
         onRefresh={fetchDocuments}
         onOpenViewer={(id, name, page = 1) => setSelectedDoc({ id, name, page })}
+        onExploreSections={(id, name) => setSelectedExploreDoc({ id, name })}
       />
 
       {selectedDoc && (
@@ -45,6 +48,15 @@ export const DocumentsPage: React.FC = () => {
           documentId={selectedDoc.id}
           documentName={selectedDoc.name}
           initialPage={selectedDoc.page}
+        />
+      )}
+
+      {selectedExploreDoc && (
+        <SectionExplorerModal
+          isOpen={!!selectedExploreDoc}
+          onClose={() => setSelectedExploreDoc(null)}
+          documentId={selectedExploreDoc.id}
+          documentName={selectedExploreDoc.name}
         />
       )}
     </div>

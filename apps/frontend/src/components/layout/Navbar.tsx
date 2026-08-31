@@ -1,52 +1,39 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { LogOut, Shield, User as UserIcon } from 'lucide-react';
+import { Shield, User as UserIcon } from 'lucide-react';
+import { UserButton } from '@clerk/clerk-react';
 
 export const Navbar: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
 
   return (
-    <header className="h-16 glass-panel border-b border-border px-6 flex items-center justify-between shrink-0">
+    <header className="h-[52px] bg-canvas-parchment/80 backdrop-blur-md px-6 flex items-center justify-between shrink-0 sticky top-0 z-30 select-none border-b border-hairline font-sans">
       <div className="flex items-center gap-3">
-        <span className="text-xs px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono font-semibold">
-          OKF Knowledge v1.0
+        <span className="text-[17px] font-semibold tracking-apple-tight text-ink">
+          Document Intelligence
         </span>
         {isAdmin ? (
-          <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold">
-            <Shield className="w-3 h-3" /> Admin Access
+          <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 text-[11px] font-semibold">
+            <Shield className="w-3 h-3" /> Admin
           </span>
         ) : (
-          <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-xs font-semibold">
-            <UserIcon className="w-3 h-3 text-indigo-400" /> User Access
+          <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-soft text-muted-ink border border-hairline text-[11px] font-semibold">
+            <UserIcon className="w-3 h-3 text-muted-ink" /> User
           </span>
         )}
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-3 bg-surface px-3.5 py-1.5 rounded-xl border border-border">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600/30 text-indigo-300 flex items-center justify-center font-extrabold text-sm border border-indigo-500/30">
-            {user?.name?.[0] || 'U'}
+      <div className="flex items-center gap-4 text-[13px]">
+        {user && (
+          <div className="hidden md:flex items-center gap-2 text-muted-ink font-normal">
+            <span>Logged in as:</span>
+            <span className="text-ink font-semibold">{user.name}</span>
           </div>
-          <div className="text-left hidden sm:block">
-            <div className="flex items-center gap-1.5">
-              <span className="text-sm font-semibold text-white leading-tight">{user?.name || 'User'}</span>
-              <span className="px-1.5 py-0.2 bg-indigo-500/20 text-indigo-300 text-[10px] font-extrabold uppercase rounded border border-indigo-500/30">
-                {user?.role || 'USER'}
-              </span>
-            </div>
-            <div className="text-xs text-gray-400 font-mono">{user?.email}</div>
-          </div>
-        </div>
-
-        <button
-          onClick={logout}
-          className="p-2 rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
-          title="Logout"
-        >
-          <LogOut className="w-5 h-5" />
-        </button>
+        )}
+        <UserButton afterSignOutUrl="/login" />
       </div>
     </header>
   );
 };
+

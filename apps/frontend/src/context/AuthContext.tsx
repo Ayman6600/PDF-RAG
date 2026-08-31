@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { api } from '../services/api';
+import { useAuth as useClerkAuth, useUser } from '@clerk/clerk-react';
 
 export interface User {
   id: string;
@@ -20,44 +21,57 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { isSignedIn, isLoaded, getToken, signOut } = useClerkAuth();
+  const { user: clerkUser } = useUser();
 
+  // Register Axios request interceptor dynamically to inject the current Clerk token
   useEffect(() => {
-    const initAuth = async () => {
-      const token = localStorage.getItem('access_token');
-      if (token) {
+    const interceptor = api.interceptors.request.use(
+      async (config) => {
         try {
-          const res: any = await api.get('/auth/me');
-          setUser(res.data);
-        } catch {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
+          const token = await getToken();
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+          }
+        } catch (err) {
+          console.error('Error fetching Clerk token:', err);
         }
-      }
-      setIsLoading(false);
-    };
-    initAuth();
-  }, []);
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
 
-  const login = (tokens: { accessToken: string; refreshToken: string }, userData: User) => {
-    localStorage.setItem('access_token', tokens.accessToken);
-    localStorage.setItem('refresh_token', tokens.refreshToken);
-    setUser(userData);
+    return () => {
+      api.interceptors.request.eject(interceptor);
+    };
+  }, [getToken]);
+
+  const user: User | null = clerkUser ? {
+    id: clerkUser.id,
+    email: clerkUser.primaryEmailAddress?.emailAddress || '',
+    name: clerkUser.fullName || clerkUser.username || 'Clerk User',
+    role: 'ADMIN', // Defaulting to ADMIN for feature access in front-end
+    organizationId: 'default-org',
+  } : null;
+
+  const login = () => {
+    console.warn('login() is a no-op with Clerk. Use Clerk sign-in components instead.');
   };
 
-  const logout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    setUser(null);
+  const logout = async () => {
+    try {
+      await signOut();
+    } catch (err) {
+      console.error('Failed to sign out from Clerk:', err);
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
-        isLoading,
+        isAuthenticated: !!isSignedIn,
+        isLoading: !isLoaded,
         login,
         logout,
       }}
@@ -74,3 +88,4 @@ export const useAuth = () => {
   }
   return context;
 };
+

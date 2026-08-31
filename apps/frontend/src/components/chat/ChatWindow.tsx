@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Loader2, Sparkles, MessageSquarePlus, FileText, CheckCircle2, Layers } from 'lucide-react';
+import { Send, Loader2, Circle, MessageSquarePlus, FileText, CheckCircle2, Layers } from 'lucide-react';
 import { MessageItem, ChatMessage } from './MessageItem';
 import { CitationItem } from './CitationCard';
 import { api } from '../../services/api';
+import { useAuth as useClerkAuth } from '@clerk/clerk-react';
 
 interface ChatWindowProps {
   conversationId?: string;
   selectedDocId?: string;
   selectedDocName?: string;
+  initialQuery?: string;
   onOpenViewer: (docId: string, docName: string, page: number) => void;
   onNewConversation: () => void;
 }
@@ -16,13 +18,16 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   conversationId,
   selectedDocId,
   selectedDocName,
+  initialQuery,
   onOpenViewer,
   onNewConversation,
 }) => {
+  const { getToken } = useClerkAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const hasTriggeredRef = useRef(false);
 
   useEffect(() => {
     if (!conversationId) {
@@ -84,7 +89,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     setMessages((prev) => [...prev, initialAssistantMsg]);
 
     // Construct SSE URL with authentication token and optional document ID scope filter
-    const token = localStorage.getItem('access_token');
+    const token = await getToken();
     let sseUrl = `/api/v1/conversations/${currentConvId}/stream?content=${encodeURIComponent(queryText)}&token=${encodeURIComponent(token || '')}`;
     if (selectedDocId) {
       sseUrl += `&documentIds=${encodeURIComponent(selectedDocId)}`;
@@ -122,30 +127,37 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     });
   };
 
+  useEffect(() => {
+    if (initialQuery && !hasTriggeredRef.current) {
+      hasTriggeredRef.current = true;
+      handleSend(initialQuery);
+    }
+  }, [initialQuery]);
+
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSend();
   };
 
   return (
-    <div className="flex-1 flex flex-col glass-panel rounded-2xl border border-border h-full overflow-hidden">
+    <div className="flex-1 flex flex-col bg-canvas h-full overflow-hidden">
       {/* Top Bar with Context Scope Indicator */}
-      <div className="h-14 bg-surface px-6 flex items-center justify-between border-b border-border">
+      <div className="h-14 bg-canvas px-6 flex items-center justify-between select-none">
         <div className="flex items-center gap-3">
-          <Sparkles className="w-5 h-5 text-indigo-400" />
-          <h3 className="font-bold text-white text-sm">Grounded PDF Knowledge Chat</h3>
+          <Circle className="w-4 h-4 text-primary fill-primary/10 shrink-0" />
+          <h3 className="font-semibold text-ink text-sm tracking-apple-headline">Grounded PDF Knowledge Chat</h3>
 
-          <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-            <FileText className="w-3.5 h-3.5 text-indigo-400" />
+          <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary">
+            <FileText className="w-3.5 h-3.5 text-primary" />
             {selectedDocName ? `Scope: ${selectedDocName}` : 'Scope: All Uploaded Documents'}
           </span>
         </div>
 
         <button
           onClick={onNewConversation}
-          className="flex items-center gap-2 px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/20 rounded-xl text-xs font-semibold transition-colors"
+          className="flex items-center gap-2 px-3.5 h-8 bg-surface-soft hover:bg-surface-strong text-ink rounded-full text-xs font-semibold transition-all active:scale-95"
         >
-          <MessageSquarePlus className="w-4 h-4" />
+          <MessageSquarePlus className="w-4 h-4 text-primary" />
           <span>New Chat</span>
         </button>
       </div>
@@ -154,27 +166,45 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center p-8">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white flex items-center justify-center mb-4 shadow-xl shadow-indigo-500/20">
-              <Sparkles className="w-8 h-8" />
+            <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4 active:scale-95 transition-all border border-primary/20">
+              <Circle className="w-8 h-8 fill-primary" />
             </div>
-            <h3 className="font-extrabold text-white text-xl">Ask Your PDF Knowledge Base</h3>
-            <p className="text-sm text-gray-400 max-w-md mt-2">
+            <h3 className="font-semibold text-ink text-lg tracking-apple-headline">Ask Your PDF Knowledge Base</h3>
+            <p className="text-[15px] text-muted-ink max-w-md mt-2 font-normal leading-relaxed tracking-apple-tight">
               Query uploaded PDF documents using hybrid pgvector + BM25 search. Every answer includes verifiable page-level citations.
             </p>
 
-            {/* Quick Prompt Chips */}
-            <div className="mt-6 flex flex-wrap justify-center gap-2 max-w-lg">
+            {/* Quick Prompt Cards Grid (2x2 ChatGPT style) */}
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-3 max-w-xl w-full">
               {[
-                'Summarize the uploaded PDF document',
-                'What are the key technical specifications?',
-                'Explain the main requirements mentioned',
-              ].map((prompt, idx) => (
+                {
+                  title: 'Summarize Document',
+                  desc: 'Generate a concise executive summary and key findings',
+                  prompt: 'Provide a comprehensive summary of the uploaded document, highlighting the main objectives and findings.',
+                },
+                {
+                  title: 'Technical Specs',
+                  desc: 'Retrieve core technical data, metrics, and specs',
+                  prompt: 'What are the key technical specifications, architecture patterns, and engineering metrics in this document?',
+                },
+                {
+                  title: 'Analyze Requirements',
+                  desc: 'Identify deliverables, rules, and conditions',
+                  prompt: 'List and explain the main requirements, tasks, deliverables, and compliance terms defined in this document.',
+                },
+                {
+                  title: 'Identify Risk Factors',
+                  desc: 'Detect warning points, assumptions, and gaps',
+                  prompt: 'What are the potential risks, issues, assumptions, gaps, or security warning points discussed in this document?',
+                },
+              ].map((card, idx) => (
                 <button
                   key={idx}
-                  onClick={() => handleSend(prompt)}
-                  className="px-3.5 py-2 bg-surface hover:bg-surface-hover border border-border text-xs text-indigo-300 rounded-xl transition-all font-medium text-left hover:scale-[1.02]"
+                  onClick={() => handleSend(card.prompt)}
+                  className="p-4 bg-canvas-parchment hover:bg-[#eaeaea] dark:hover:bg-[#2c2c2e] rounded-[16px] text-left transition-all active:scale-[0.98] flex flex-col justify-between h-24 select-none cursor-pointer"
                 >
-                  "{prompt}"
+                  <div className="font-semibold text-xs text-ink tracking-apple-headline">{card.title}</div>
+                  <div className="text-[11px] text-muted-ink mt-1 font-normal leading-normal">{card.desc}</div>
                 </button>
               ))}
             </div>
@@ -188,7 +218,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       </div>
 
       {/* Input Bar */}
-      <form onSubmit={handleFormSubmit} className="p-4 bg-surface/50 border-t border-border">
+      <form onSubmit={handleFormSubmit} className="p-4 bg-canvas">
         <div className="relative flex items-center">
           <input
             type="text"
@@ -200,12 +230,12 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 : 'Ask a question about your uploaded PDF documents...'
             }
             disabled={isStreaming}
-            className="w-full pl-4 pr-12 py-3 bg-slate-900/90 border border-border rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
+            className="w-full pl-5 pr-14 h-12 bg-[#fafafc] dark:bg-[#1c1c1e] text-[#1d1d1f] dark:text-[#f5f5f7] rounded-full text-sm placeholder-muted-soft focus:outline-none focus:ring-2 focus:ring-primary-focus transition-all"
           />
           <button
             type="submit"
             disabled={!input.trim() || isStreaming}
-            className="absolute right-2 p-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg transition-colors"
+            className="absolute right-1.5 p-2 bg-primary hover:bg-primary-600 disabled:bg-primary/40 text-white rounded-full transition-all active:scale-95 shrink-0"
           >
             {isStreaming ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           </button>
