@@ -8,6 +8,8 @@
     "packages/*"
   ],
   "scripts": {
+    "start": "pnpm --filter @okf-rag/backend start",
+    "start:backend": "pnpm --filter @okf-rag/backend start",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
