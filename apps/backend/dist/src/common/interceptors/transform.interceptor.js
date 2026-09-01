@@ -11,13 +11,29 @@ const common_1 = require("@nestjs/common");
 const operators_1 = require("rxjs/operators");
 let TransformInterceptor = class TransformInterceptor {
     intercept(context, next) {
+        const http = context.switchToHttp();
+        const req = http.getRequest();
+        const requestId = req?.headers?.['x-request-id'] || req?.id || `req_${Date.now()}`;
+        const timestamp = new Date().toISOString();
+        const path = req?.url;
         return next.handle().pipe((0, operators_1.map)((data) => {
-            if (data && typeof data === 'object' && 'success' in data) {
+            if (data && (typeof data === 'string' || Buffer.isBuffer(data))) {
                 return data;
+            }
+            if (data && typeof data === 'object' && 'success' in data) {
+                return {
+                    requestId,
+                    timestamp,
+                    path,
+                    ...data,
+                };
             }
             return {
                 success: true,
                 data,
+                requestId,
+                timestamp,
+                path,
             };
         }));
     }

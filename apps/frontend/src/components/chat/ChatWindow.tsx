@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send, Loader2, Circle, MessageSquarePlus, FileText, CheckCircle2, Layers } from 'lucide-react';
 import { MessageItem, ChatMessage } from './MessageItem';
 import { CitationItem } from './CitationCard';
-import { api } from '../../services/api';
+import { api, getApiV1Url } from '../../services/api';
 import { useAuth as useClerkAuth } from '@clerk/clerk-react';
 
 interface ChatWindowProps {
@@ -90,8 +90,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
     // Construct SSE URL with authentication token and optional document ID scope filter
     const token = await getToken();
-    const apiBase = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/+$/, '') : '';
-    let sseUrl = `${apiBase}/api/v1/conversations/${currentConvId}/stream?content=${encodeURIComponent(queryText)}&token=${encodeURIComponent(token || '')}`;
+    let sseUrl = `${getApiV1Url()}/conversations/${currentConvId}/stream?content=${encodeURIComponent(queryText)}&token=${encodeURIComponent(token || '')}`;
     if (selectedDocId) {
       sseUrl += `&documentIds=${encodeURIComponent(selectedDocId)}`;
     }

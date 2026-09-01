@@ -116,11 +116,16 @@ export interface SSEEvent {
 export interface ApiResponse<T = unknown> {
     success: boolean;
     data?: T;
+    requestId?: string;
+    timestamp?: string;
+    path?: string;
     error?: {
         code: string;
         message: string;
         requestId?: string;
         details?: unknown;
+        timestamp?: string;
+        path?: string;
     };
 }
 export interface RetrievalQueryDto {

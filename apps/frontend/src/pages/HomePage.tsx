@@ -104,7 +104,8 @@ export const HomePage: React.FC = () => {
       fetchDocuments();
       navigate(`/chat?documentId=${res.id || res.data?.id}`);
     } catch (err: any) {
-      setUploadError(err.error?.message || 'Failed to upload PDF');
+      const msg = err.status ? `Error ${err.status}: ${err.message}` : (err.message || 'Failed to upload PDF');
+      setUploadError(msg);
     } finally {
       setIsUploading(false);
       e.target.value = '';

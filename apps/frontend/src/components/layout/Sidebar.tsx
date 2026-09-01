@@ -86,7 +86,8 @@ export const Sidebar: React.FC = () => {
       await api.post('/documents', formData);
       fetchDocuments();
     } catch (err: any) {
-      alert(err.error?.message || 'Failed to upload PDF');
+      const msg = err.status ? `Error ${err.status}: ${err.message}` : (err.message || 'Failed to upload PDF');
+      alert(msg);
     } finally {
       setIsUploading(false);
       e.target.value = '';

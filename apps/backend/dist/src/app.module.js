@@ -26,7 +26,11 @@ const rag_module_1 = require("./rag/rag.module");
 const chat_module_1 = require("./chat/chat.module");
 const health_module_1 = require("./health/health.module");
 const drafts_module_1 = require("./drafts/drafts.module");
+const request_id_middleware_1 = require("./common/middleware/request-id.middleware");
 let AppModule = class AppModule {
+    configure(consumer) {
+        consumer.apply(request_id_middleware_1.RequestIdMiddleware).forRoutes('*');
+    }
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
@@ -36,11 +40,40 @@ exports.AppModule = AppModule = __decorate([
                 isGlobal: true,
                 validate: validation_1.validateEnv,
             }),
-            nestjs_pino_1.LoggerModule.forRoot({
-                pinoHttp: {
-                    transport: process.env.NODE_ENV !== 'production'
-                        ? { target: 'pino-pretty', options: { colorize: true } }
-                        : undefined,
+            nestjs_pino_1.LoggerModule.forRootAsync({
+                inject: [config_1.ConfigService],
+                useFactory: (config) => {
+                    const isDev = config.get('NODE_ENV') !== 'production';
+                    return {
+                        pinoHttp: {
+                            genReqId: (req) => req.headers['x-request-id'] || req.id || `req_${Date.now()}`,
+                            customProps: (req) => ({
+                                requestId: req.headers['x-request-id'] || req.id,
+                                userId: req.user?.id || req.user?.sub || undefined,
+                            }),
+                            customSuccessMessage: (req, res, responseTime) => {
+                                return `HTTP ${req.method} ${req.url} status ${res.statusCode} - ${responseTime}ms`;
+                            },
+                            customErrorMessage: (req, res, err) => {
+                                return `HTTP ${req.method} ${req.url} status ${res.statusCode} failed - ${err.message}`;
+                            },
+                            transport: isDev
+                                ? {
+                                    target: 'pino-pretty',
+                                    options: {
+                                        colorize: true,
+                                        singleLine: true,
+                                        translateTime: 'SYS:yyyy-mm-dd HH:MM:ss.l',
+                                        ignore: 'pid,hostname',
+                                    },
+                                }
+                                : undefined,
+                            redact: {
+                                paths: ['req.headers.authorization', 'req.headers.cookie', 'req.body.password', 'req.body.token'],
+                                censor: '[REDACTED]',
+                            },
+                        },
+                    };
                 },
             }),
             throttler_1.ThrottlerModule.forRootAsync({

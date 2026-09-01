@@ -20,7 +20,10 @@ let GlobalExceptionFilter = GlobalExceptionFilter_1 = class GlobalExceptionFilte
         const status = exception instanceof common_1.HttpException
             ? exception.getStatus()
             : common_1.HttpStatus.INTERNAL_SERVER_ERROR;
-        const requestId = request.headers['x-request-id'] || `req_${Date.now()}`;
+        const requestId = request.headers['x-request-id'] || request.id || `req_${Date.now()}`;
+        const timestamp = new Date().toISOString();
+        const path = request.url;
+        response.setHeader('X-Request-Id', requestId);
         let message = 'Internal server error';
         let code = 'INTERNAL_SERVER_ERROR';
         let details = undefined;
@@ -32,21 +35,30 @@ let GlobalExceptionFilter = GlobalExceptionFilter_1 = class GlobalExceptionFilte
             else if (typeof res === 'object' && res !== null) {
                 const obj = res;
                 message = obj.message || exception.message;
-                code = obj.error || exception.name;
-                details = obj.message !== message ? obj.message : undefined;
+                code = obj.error || exception.name || common_1.HttpStatus[status];
+                details = Array.isArray(obj.message) ? obj.message : (obj.message !== message ? obj.message : undefined);
             }
+            this.logger.warn(`[${requestId}] ${request.method} ${path} -> HTTP ${status}: ${Array.isArray(message) ? message.join(', ') : message}`);
         }
         else if (exception instanceof Error) {
             message = process.env.NODE_ENV === 'production' ? 'Internal server error' : exception.message;
-            this.logger.error(`Unhandled Exception: ${exception.message}`, exception.stack);
+            this.logger.error(`[${requestId}] ${request.method} ${path} -> Unhandled Error: ${exception.message}`, exception.stack);
+        }
+        else {
+            this.logger.error(`[${requestId}] ${request.method} ${path} -> Unknown Exception:`, exception);
         }
         const payload = {
             success: false,
+            requestId,
+            timestamp,
+            path,
             error: {
                 code,
                 message: Array.isArray(message) ? message.join(', ') : message,
                 requestId,
                 details,
+                timestamp,
+                path,
             },
         };
         response.status(status).json(payload);

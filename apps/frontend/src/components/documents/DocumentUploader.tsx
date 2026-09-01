@@ -34,7 +34,8 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onUploadSucc
       setSuccess(`"${file.name}" uploaded successfully. BullMQ worker is processing document into OKF knowledge format.`);
       onUploadSuccess();
     } catch (err: any) {
-      setError(err.error?.message || 'Failed to upload PDF document');
+      const msg = err.status ? `Error ${err.status}: ${err.message}` : (err.message || 'Failed to upload PDF document');
+      setError(msg);
     } finally {
       setIsUploading(false);
     }

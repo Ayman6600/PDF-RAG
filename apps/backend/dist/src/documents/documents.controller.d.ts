@@ -8,6 +8,8 @@ export declare class DocumentsController {
         id: string;
         organizationId: string;
         name: string;
+        createdAt: Date;
+        updatedAt: Date;
         filename: string;
         mimeType: string;
         fileSize: number;
@@ -16,8 +18,6 @@ export declare class DocumentsController {
         pageCount: number;
         checksum: string;
         errorMessage: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     getDocuments(user: RequestUser, search?: string, status?: string): Promise<({
         _count: {
@@ -28,6 +28,8 @@ export declare class DocumentsController {
         id: string;
         organizationId: string;
         name: string;
+        createdAt: Date;
+        updatedAt: Date;
         filename: string;
         mimeType: string;
         fileSize: number;
@@ -36,8 +38,6 @@ export declare class DocumentsController {
         pageCount: number;
         checksum: string;
         errorMessage: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     getDocumentById(id: string, user: RequestUser): Promise<{
         sections: {
@@ -45,17 +45,17 @@ export declare class DocumentsController {
             createdAt: Date;
             sectionIndex: number;
             documentId: string;
+            content: string;
             title: string;
             pageStart: number;
             pageEnd: number;
-            content: string;
             yamlMetadata: string | null;
         }[];
         ingestionJobs: {
             id: string;
-            errorMessage: string | null;
             createdAt: Date;
             updatedAt: Date;
+            errorMessage: string | null;
             documentId: string;
             stage: import(".prisma/client").$Enums.IngestionStage;
             progress: number;
@@ -65,6 +65,8 @@ export declare class DocumentsController {
         id: string;
         organizationId: string;
         name: string;
+        createdAt: Date;
+        updatedAt: Date;
         filename: string;
         mimeType: string;
         fileSize: number;
@@ -73,18 +75,16 @@ export declare class DocumentsController {
         pageCount: number;
         checksum: string;
         errorMessage: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     getDocumentChunks(id: string, user: RequestUser): Promise<{
         id: string;
+        metadata: import("@prisma/client/runtime/library").JsonValue;
         documentId: string;
-        content: string;
         sectionId: string | null;
+        content: string;
         pageNumber: number;
         chunkIndex: number;
         tokenCount: number;
-        metadata: import("@prisma/client/runtime/library").JsonValue;
     }[]>;
     getDocumentFile(id: string, user: RequestUser, res: Response): Promise<void>;
     reprocessDocument(id: string, user: RequestUser): Promise<{

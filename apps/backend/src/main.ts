@@ -51,8 +51,9 @@ async function bootstrap() {
       'Origin',
       'Range',
       'x-request-id',
+      'X-Request-Id',
     ],
-    exposedHeaders: ['Content-Disposition', 'Content-Length', 'Content-Range'],
+    exposedHeaders: ['Content-Disposition', 'Content-Length', 'Content-Range', 'X-Request-Id', 'X-Response-Time'],
     credentials: true,
   });
 
@@ -85,8 +86,9 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port, '0.0.0.0');
-  console.log(`🚀 OKF-RAG Backend running on http://0.0.0.0:${port}/api/v1`);
-  console.log(`📚 Swagger Docs available on http://0.0.0.0:${port}/api/docs`);
+  const logger = app.get(Logger);
+  logger.log(`🚀 OKF-RAG Backend running on http://0.0.0.0:${port}/api/v1`);
+  logger.log(`📚 Swagger Docs available on http://0.0.0.0:${port}/api/docs`);
 }
 
 bootstrap();

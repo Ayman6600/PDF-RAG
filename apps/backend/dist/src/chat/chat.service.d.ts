@@ -7,9 +7,9 @@ export declare class ChatService {
     constructor(prisma: PrismaService, ragService: RAGService);
     createConversation(organizationId: string, userId: string, title?: string): Promise<{
         id: string;
+        organizationId: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         userId: string;
         title: string;
     }>;
@@ -19,9 +19,9 @@ export declare class ChatService {
         };
     } & {
         id: string;
+        organizationId: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         userId: string;
         title: string;
     })[]>;
@@ -31,24 +31,24 @@ export declare class ChatService {
                 id: string;
                 documentId: string;
                 pageNumber: number;
-                messageId: string;
-                chunkId: string;
                 documentName: string;
                 relevanceScore: number;
                 snippet: string;
+                chunkId: string;
+                messageId: string;
             }[];
         } & {
             id: string;
-            createdAt: Date;
             role: string;
+            createdAt: Date;
             content: string;
             conversationId: string;
         })[];
     } & {
         id: string;
+        organizationId: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         userId: string;
         title: string;
     }>;
@@ -58,8 +58,8 @@ export declare class ChatService {
     sendMessage(conversationId: string, organizationId: string, content: string, documentIds?: string[]): Promise<{
         userMessage: {
             id: string;
-            createdAt: Date;
             role: string;
+            createdAt: Date;
             content: string;
             conversationId: string;
         };
@@ -68,16 +68,16 @@ export declare class ChatService {
                 id: string;
                 documentId: string;
                 pageNumber: number;
-                messageId: string;
-                chunkId: string;
                 documentName: string;
                 relevanceScore: number;
                 snippet: string;
+                chunkId: string;
+                messageId: string;
             }[];
         } & {
             id: string;
-            createdAt: Date;
             role: string;
+            createdAt: Date;
             content: string;
             conversationId: string;
         };

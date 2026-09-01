@@ -8,6 +8,7 @@ import { router } from './app/router';
 import './index.css';
 
 const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const API_URL = import.meta.env.VITE_API_URL;
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,7 +19,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const MissingConfigScreen: React.FC = () => {
+const MissingConfigScreen: React.FC<{ missingVars: string[] }> = ({ missingVars }) => {
   return (
     <div className="min-h-screen w-screen flex flex-col items-center justify-center bg-[#0d1117] p-6 text-white font-sans">
       <div className="max-w-lg w-full bg-[#161b22] border border-slate-800 rounded-2xl p-8 shadow-xl space-y-6">
@@ -27,10 +28,17 @@ const MissingConfigScreen: React.FC = () => {
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight text-white">Missing Environment Variable</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Missing Environment Variables</h1>
           <p className="text-sm text-slate-400 leading-relaxed">
-            The frontend requires <code className="bg-slate-900 px-2 py-0.5 rounded text-amber-300 font-mono text-xs">VITE_CLERK_PUBLISHABLE_KEY</code> to initialize authentication.
+            The frontend is missing required build-time variables:
           </p>
+          <div className="flex flex-wrap gap-2 pt-1">
+            {missingVars.map((v) => (
+              <code key={v} className="bg-slate-900 border border-amber-500/30 px-2.5 py-1 rounded text-amber-300 font-mono text-xs">
+                {v}
+              </code>
+            ))}
+          </div>
         </div>
 
         <div className="bg-slate-950/80 rounded-2xl p-4 border border-slate-800 text-xs space-y-3 font-mono text-slate-300">
@@ -38,9 +46,9 @@ const MissingConfigScreen: React.FC = () => {
           <ol className="list-decimal list-inside space-y-1.5 text-slate-400 font-sans text-xs">
             <li>Go to your project on <span className="text-white font-semibold">Vercel Dashboard</span></li>
             <li>Navigate to <span className="text-white font-semibold">Settings &rarr; Environment Variables</span></li>
-            <li>Add <span className="text-amber-300 font-mono">VITE_CLERK_PUBLISHABLE_KEY</span> with your Clerk Publishable Key value</li>
-            <li>Add <span className="text-amber-300 font-mono">VITE_API_URL</span> pointing to your backend URL</li>
-            <li>Go to <span className="text-white font-semibold">Deployments &rarr; Redeploy</span></li>
+            <li>Add <span className="text-amber-300 font-mono">VITE_API_URL</span> pointing to your backend URL (e.g. <span className="text-slate-300">https://your-backend.onrender.com</span>)</li>
+            <li>Add <span className="text-amber-300 font-mono">VITE_CLERK_PUBLISHABLE_KEY</span> with your Clerk Publishable Key</li>
+            <li>Go to <span className="text-white font-semibold">Deployments &rarr; Redeploy</span> (make sure to untick "Use existing build cache")</li>
           </ol>
         </div>
 
@@ -57,8 +65,12 @@ const MissingConfigScreen: React.FC = () => {
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 
-if (!CLERK_PUBLISHABLE_KEY) {
-  root.render(<MissingConfigScreen />);
+const missing: string[] = [];
+if (!CLERK_PUBLISHABLE_KEY) missing.push('VITE_CLERK_PUBLISHABLE_KEY');
+if (!API_URL && import.meta.env.PROD) missing.push('VITE_API_URL');
+
+if (missing.length > 0) {
+  root.render(<MissingConfigScreen missingVars={missing} />);
 } else {
   root.render(
     <React.StrictMode>
