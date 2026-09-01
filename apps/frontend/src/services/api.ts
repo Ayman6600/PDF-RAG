@@ -26,7 +26,19 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (response) => response.data,
+  (response) => {
+    // If backend returns HTML (e.g. Vercel SPA rewrite when VITE_API_URL is missing or pointing to frontend)
+    if (typeof response.data === 'string' && response.data.trim().startsWith('<!DOCTYPE html')) {
+      const msg =
+        'VITE_API_URL is missing or pointing to Vercel frontend. Please set VITE_API_URL in Vercel project settings to your backend deployment URL (e.g. https://your-backend.onrender.com)';
+      return Promise.reject({
+        status: 404,
+        message: msg,
+        code: 'MISSING_VITE_API_URL',
+      });
+    }
+    return response.data;
+  },
   async (error) => {
     if (error.response?.status === 401) {
       if (window.location.pathname !== '/login' && window.location.pathname !== '/') {
