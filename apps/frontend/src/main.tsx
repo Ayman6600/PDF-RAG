@@ -67,7 +67,6 @@ const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 const missing: string[] = [];
 if (!CLERK_PUBLISHABLE_KEY) missing.push('VITE_CLERK_PUBLISHABLE_KEY');
-if (!API_URL && import.meta.env.PROD) missing.push('VITE_API_URL');
 
 if (missing.length > 0) {
   root.render(<MissingConfigScreen missingVars={missing} />);
